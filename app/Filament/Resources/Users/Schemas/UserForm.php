@@ -21,6 +21,13 @@ class UserForm
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
+                \Filament\Forms\Components\Select::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'user' => 'User',
+                    ])
+                    ->required()
+                    ->default('user'),
                 TextInput::make('password')
                     ->password()
                     ->required(fn (string $operation): bool => $operation === 'create')

@@ -11,7 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->redirectTo(
+            guests: '/login',
+            users: function (\Illuminate\Http\Request $request) {
+                return $request->user()?->role === 'admin' ? '/admin' : '/';
+            }
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

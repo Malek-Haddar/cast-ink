@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AccessCode;
 use App\Models\Podcast;
+use App\Models\UserPodcastAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,17 @@ class HomeController extends Controller
 
         $sessionKey = $this->sessionKey($podcast);
         $accessGranted = (bool) $request->session()->get($sessionKey, false);
+
+        // Check database if not in session
+        if (!$accessGranted && Auth::check()) {
+            $accessGranted = UserPodcastAccess::where('user_id', Auth::id())
+                ->where('podcast_id', $podcast->id)
+                ->exists();
+            
+            if ($accessGranted) {
+                $request->session()->put($sessionKey, true);
+            }
+        }
 
         return view('pages.podcast-show', [
             'podcast' => $podcast,
@@ -53,6 +65,12 @@ class HomeController extends Controller
         $accessCode->is_used = true;
         if (Auth::check()) {
             $accessCode->used_by = Auth::id();
+            
+            // Persist access in database
+            UserPodcastAccess::firstOrCreate([
+                'user_id' => Auth::id(),
+                'podcast_id' => $podcast->id,
+            ]);
         }
         $accessCode->save();
 

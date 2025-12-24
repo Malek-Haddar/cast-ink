@@ -13,6 +13,13 @@ class UserInfolist
             ->components([
                 TextEntry::make('name'),
                 TextEntry::make('email'),
+                TextEntry::make('role')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'user' => 'info',
+                        default => 'gray',
+                    }),
                 TextEntry::make('email_verified_at')
                     ->dateTime()
                     ->placeholder('Not verified'),

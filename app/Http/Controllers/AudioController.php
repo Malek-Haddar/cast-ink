@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Episode;
+use App\Models\UserPodcastAccess;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
@@ -34,6 +36,15 @@ class AudioController extends Controller
             $sessionKey = 'podcast_access_' . $episode->podcast_id;
             if ($request->session()->get($sessionKey)) {
                 $hasAccess = true;
+            } elseif (Auth::check()) {
+                // Check database if not in session
+                $hasAccess = UserPodcastAccess::where('user_id', Auth::id())
+                    ->where('podcast_id', $episode->podcast_id)
+                    ->exists();
+                
+                if ($hasAccess) {
+                    $request->session()->put($sessionKey, true);
+                }
             }
         }
 
@@ -75,6 +86,15 @@ class AudioController extends Controller
             $sessionKey = 'podcast_access_' . $episode->podcast_id;
             if ($request->session()->get($sessionKey)) {
                 $hasAccess = true;
+            } elseif (Auth::check()) {
+                // Check database if not in session
+                $hasAccess = UserPodcastAccess::where('user_id', Auth::id())
+                    ->where('podcast_id', $episode->podcast_id)
+                    ->exists();
+                
+                if ($hasAccess) {
+                    $request->session()->put($sessionKey, true);
+                }
             }
         }
 
