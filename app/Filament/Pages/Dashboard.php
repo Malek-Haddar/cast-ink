@@ -12,6 +12,27 @@ class Dashboard extends BaseDashboard
 {
     use HasFiltersForm;
 
+    public function getColumns(): int | array
+    {
+        return 2;
+    }
+
+    public function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\WelcomeBanner::class,
+        ];
+    }
+
+    public function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\DashboardOverview::class,
+            \App\Filament\Widgets\LatestEpisodes::class,
+            \App\Filament\Widgets\LatestUsers::class,
+        ];
+    }
+
     public function filtersForm(Schema $schema): Schema
     {
         return $schema
@@ -20,9 +41,9 @@ class Dashboard extends BaseDashboard
                     ->schema([
                         DatePicker::make('startDate'),
                         DatePicker::make('endDate'),
-                        // ...
                     ])
-                    ->columns(3),
+                    ->columns(2)
+                    ->columnSpan('full'),
             ]);
     }
 }
